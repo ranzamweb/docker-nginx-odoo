@@ -1,0 +1,35 @@
+version: '2'
+services:
+  odoo-demo:
+    image: odoo:11.0
+    restart: always
+    ports:
+      - 8070:8069
+    links:
+      - database:db
+    volumes:
+      - ./odoo-demo/extra-addons:/mnt/extra-addons
+      - ./odoo-demo/configuration:/etc/odoo/odoo-demo-server.conf
+    depends_on:
+      - database
+    environment:
+      - HOST=database
+      - USER=odoo
+      - PASSWORD=odooDemo8589
+  database:
+    image: postgres:10
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=odooDemo8589
+      - POSTGRES_USER=odoo
+  web:
+    image: nginx
+    volumes:
+      - ./web/configuration/default:/etc/nginx/conf.d/default.conf
+      - ./web/configuration/logs/nginx-error.log:/var/log/nginx/error.log
+      - ./web/configuration/logs/nginx-access.log:/var/log/nginx/access.log
+      - ./web/html:/var/www/html      
+    ports:
+     - 80:80
